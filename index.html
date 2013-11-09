@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>split images</title>
+  <style>
+  #preview{
+    width: 400px;
+    height: 200px;
+    border: 2px dashed #00f;
+  }
+  #preview img{
+    width: 100%;
+    height: 100%;
+  }
+  table{
+    border-collapse: collapse;
+  }
+  td,th{
+    padding: 0;
+  }
+  td img{
+    display: block;
+    padding: 2px;
+    background: #fff;
+  }
+  </style>
+</head>
+<body>
+  <h1>Split Image Demo</h1>
+  <form action="#">
+    <p>
+      <label for="row">Row: </label>
+      <input type="number" id="row" name="row" min="0">    
+      
+      <label for="column">Column: </label>
+      <input type="number" id="column" name="column" min="0">
+      
+      <input type="file" name="imgFile" id="imgFile">
+    </p>
+  </form>
+  
+  <h2>Image Preview</h2>
+  <div id="preview">try to drag an image here</div>
+  
+  <h2>Image Split Piece</h2>
+  <div id="result"></div>
+
+  <script src="split.js"></script>
+</body>
+</html>
