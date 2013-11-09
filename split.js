@@ -20,13 +20,12 @@
         handlePiece(rowVal,columnVal,file);        
         return;
       }
-
-      if(file.type & !file.type.match("image/")){
+      if(!file.type || !file.type.match("image/")){
         alert("你上传的不是图片！");
         return;
       }
       // 文件超过2M
-      if(file.size && file.size > 2 * 1024 * 1024){
+      if(!file.size || file.size > 2 * 1024 * 1024){
         alert("请上传2M以内的图片哦，亲~~");
         return;
       }
