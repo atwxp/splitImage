@@ -26,37 +26,53 @@ var util = {
  * @param {(string | File)} file 上传的文件对象或者url路径
  */
 function handleFile(file) {
-    if (file) {
-        // 从其他页面拖拽图片，获取url路径，可能是data:url或者普通的url
-        // todo: 兼容性不好,仅chrome支持
-        if (typeof file == 'string') {
-            var source = file.match(/src="([^\s"]+)/)[1];
-            util.$('preview').innerHTML = '<img src="' + source + '" />';
-
-            handlePiece(source);
-        } 
-        else if (!file.type || !file.type.match('image/')) {
-            alert('你上传的不是图片！');
-        }
-        // 文件超过2M
-        else if (!file.size || !file.size > 2 * 1024 * 1024) {
-            alert("请上传2M以内的图片哦，亲~~");
-        }
-
-        /**
-         * 文件读取完毕时触发
-         *
-         * @event
-         * @param {Object} event
-         */
-        var reader = new FileReader();
-        reader.onload = function (event) {
-            source = event.target.result;
-            util.$('preview').innerHTML = '<img src="' + source + '" />';
-            handlePiece(source);
-        };
-        reader.readAsDataURL(file);
+    if (!file) {
+        return;
     }
+
+    // 从其他页面拖拽图片，获取url路径，可能是data:url或者普通的url
+    // todo: 兼容性不好,仅chrome支持
+    if (typeof file === 'string') {
+        var source = file.match(/src=(?:'|")(.+jpe?g|png|gif)/);
+
+        if (!source) {
+            alert('图片格式不合法！请上传jpg, png, gif, jpeg格式的图片');
+            return;
+        }
+
+        var imgUrl = source[1];
+
+        util.$('preview').innerHTML = '<img src="' + imgUrl + '" />';
+
+        handlePiece(imgUrl);
+
+        return;
+    }
+
+    if (!file.type || !file.type.match('image/')) {
+        alert('图片格式不合法！请上传jpg, png, gif, jpeg格式的图片');
+        return;
+    }
+
+    // 文件超过2M
+    if (!file.size || !file.size > 2 * 1024 * 1024) {
+        alert("请上传2M以内的图片哦，亲~~");
+        return;
+    }
+
+    /**
+     * blob文件读取完毕时触发
+     *
+     * @event
+     * @param {Object} event
+     */
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        source = event.target.result;
+        util.$('preview').innerHTML = '<img src="' + source + '" />';
+        handlePiece(source);
+    };
+    reader.readAsDataURL(file);
 }
 
 /**
@@ -89,9 +105,9 @@ function initFile() {
         var file = event.dataTransfer.files[0];
         var html = event.dataTransfer.getData('text/html');
         
-        file = file || html ;
         this.style.borderColor = '#00f';
-        handleFile(file);
+
+        handleFile(file || html);
     };
 
     /**
@@ -125,22 +141,24 @@ function initFile() {
  * @param {(string | Image)} source 可以是图片路径或者图片对象
  */
 function handlePiece(source) {
+    if (!source) {
+        return;
+    }
     var rowVal =  util.$('row').value;
     var columnVal =  util.$('column').value;
     
-    if (source) {
-        if (typeof source == 'string') {
-            var img = new Image();
-            
-            img.onload = function () {
-                util.$('result').innerHTML = createPiece(img, rowVal, columnVal);
-            };
-            img.src = source;
-        }
-        else {
-            util.$('result').innerHTML = createPiece(source, rowVal, columnVal);
-        }
-    } 
+    if (typeof source === 'string') {
+        var img = new Image();
+        
+        img.onload = function () {
+            util.$('result').innerHTML = createPiece(img, rowVal, columnVal);
+        };
+
+        img.src = source;
+    }
+    else {
+        util.$('result').innerHTML = createPiece(source, rowVal, columnVal);
+    }
 }
 
 /**
